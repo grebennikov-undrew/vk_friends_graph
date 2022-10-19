@@ -65,7 +65,7 @@ eig_centrality_id = max(eig_centrality.items(), key = lambda k : k[1])
 print("Центральность по собственному значению:")
 print(eig_centrality_id)
 
-print(friends_graph.edges)
+#print(friends_graph.edges)
 
 plt.figure(figsize =(30, 15))
 nx.draw_networkx(friends_graph, with_labels = True)
