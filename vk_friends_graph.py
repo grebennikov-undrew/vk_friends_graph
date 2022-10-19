@@ -5,10 +5,10 @@ import networkx as nx
 from random import randint
 
 # Логин, пароль для авторизации
-login = 'your_email'
-password = 'your_password'
+login = 'mail@email.com'
+password = 'password'
 
-# Максимальное количество получаемых друзей
+# Ограничение на максимальное количество друзей
 MAX_FRIENDS = 5
 
 # Создание подключения к API
@@ -32,20 +32,28 @@ friends = tools.get_all('friends.get', 10, {'user_id': my_id, 'count': MAX_FRIEN
 # Граф с друзьями и друзьями друзей
 friends_graph = nx.Graph()
 
+c1 = -1
+
 # Добавление друзей и друзей друзей в граф
 for friend_1 in friends['items']:
+  c1 = c1+1
   # Добавить в граф связь: юзер-друг
-  friends_graph.add_edge(my_id,friend_1)
-  try:
-    # Получить список друзей друга
-    friends2 = tools.get_all('friends.get', 10, {'user_id': friend_1, 'count': MAX_FRIENDS})
-  except:
-    # Если страница удалена - вывести ошибку
-    print(f"user {friend_1} is deleted")
-  else:
-    # Если список получен, добавить в граф связи: друг - друзья друга
-    for friend_2 in friends2['items']:
-      friends_graph.add_edge(friend_1,friend_2)
+  if c1 < MAX_FRIENDS:
+    friends_graph.add_edge(my_id,friend_1)
+    try:
+      # Получить список друзей друга
+      friends2 = tools.get_all('friends.get', 10, {'user_id': friend_1, 'count': MAX_FRIENDS})
+    except:
+      # Если страница удалена - вывести ошибку
+      print(f"user {friend_1} has no friends")
+    else:
+      # Если список получен, добавить в граф связи: друг - друзья друга
+      c2 = -1
+      for friend_2 in friends2['items']:
+        c2 = c2+1
+        if c2 < MAX_FRIENDS:
+          friends_graph.add_edge(friend_1,friend_2)
+
 
 # Близостная центральность
 close_centrality = nx.closeness_centrality(friends_graph)
